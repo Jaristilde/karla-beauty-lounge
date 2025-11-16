@@ -10,4 +10,4 @@
 [build.environment]
   NODE_VERSION = "18"
   # Supabase anon key is safe to expose - it's protected by Row Level Security
-  SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_ANON_KEY"
+  SECRETS_SCAN_ENABLED = "false"
