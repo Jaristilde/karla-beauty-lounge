@@ -1,24 +1,44 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Allow app to run without Supabase for testing other features
-const isMissingCredentials = !supabaseUrl || !supabaseAnonKey;
+// Check if credentials are properly configured
+export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 
-if (isMissingCredentials) {
+// Create a mock client that does nothing when Supabase is not configured
+const createMockClient = () => {
+  const mockResponse = { data: null, error: { message: 'Supabase not configured' } };
+  const mockBuilder = {
+    select: () => mockBuilder,
+    insert: () => mockBuilder,
+    update: () => mockBuilder,
+    delete: () => mockBuilder,
+    eq: () => mockBuilder,
+    order: () => mockBuilder,
+    single: () => Promise.resolve(mockResponse),
+    then: (resolve: (value: unknown) => void) => resolve(mockResponse),
+  };
+  return {
+    from: () => mockBuilder,
+    auth: {
+      signIn: () => Promise.resolve(mockResponse),
+      signOut: () => Promise.resolve(mockResponse),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    },
+  } as unknown as SupabaseClient;
+};
+
+// Only create real client if credentials exist
+export const supabase: SupabaseClient = isSupabaseConfigured
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : createMockClient();
+
+if (!isSupabaseConfigured) {
   console.warn(
     'Missing Supabase environment variables. Database features will be disabled. Create a .env.local file with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY for full functionality.'
   );
 }
-
-// Create client with placeholder values if missing (will fail gracefully on actual API calls)
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-key'
-);
-
-export const isSupabaseConfigured = !isMissingCredentials;
 
 export interface ServiceCategory {
   id: string;
