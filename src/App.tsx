@@ -10,6 +10,8 @@ import mainImageWhiteTop from './assets/images/Main_Image_WhiteTop2.jpeg';
 import karlaBobSpecial from './assets/images/Karla-bob-special.jpeg';
 import laceWigSewIn from './assets/images/Lace_WigSewin.jpg';
 import flawlessBob from './assets/images/Flawless_Bob.jpg';
+import VirtualStylist from './components/VirtualStylist';
+
 
 function App() {
   return (
@@ -267,7 +269,9 @@ function App() {
         </section>
 
         <BookingSection />
-
+        
+        <VirtualStylist />
+        
         <section className="py-20 bg-gradient-to-r from-pink-500 to-teal-500 text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h3 className="text-4xl md:text-5xl font-serif mb-4">Ready to Slay?</h3>
