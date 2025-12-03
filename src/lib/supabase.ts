@@ -3,13 +3,22 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Missing Supabase environment variables. Please create a .env.local file with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY. See .env.example for reference.'
+// Allow app to run without Supabase for testing other features
+const isMissingCredentials = !supabaseUrl || !supabaseAnonKey;
+
+if (isMissingCredentials) {
+  console.warn(
+    'Missing Supabase environment variables. Database features will be disabled. Create a .env.local file with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY for full functionality.'
   );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create client with placeholder values if missing (will fail gracefully on actual API calls)
+export const supabase = createClient(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseAnonKey || 'placeholder-key'
+);
+
+export const isSupabaseConfigured = !isMissingCredentials;
 
 export interface ServiceCategory {
   id: string;
