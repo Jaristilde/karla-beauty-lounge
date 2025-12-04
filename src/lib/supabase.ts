@@ -1,10 +1,19 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-// Check if credentials are properly configured
-export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
+// Check if credentials are properly configured (must be valid URLs)
+const isValidUrl = (url: string): boolean => {
+  try {
+    new URL(url);
+    return url.startsWith('https://');
+  } catch {
+    return false;
+  }
+};
+
+export const isSupabaseConfigured = isValidUrl(supabaseUrl) && supabaseAnonKey.length > 10;
 
 // Create a mock client that does nothing when Supabase is not configured
 const createMockClient = () => {
